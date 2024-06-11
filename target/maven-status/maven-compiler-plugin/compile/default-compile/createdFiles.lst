@@ -1,2 +1,14 @@
+com\mycompany\sd\socket\server\project\ConnectionsChecker.class
+com\mycompany\sd\socket\server\project\DatabaseManager.class
+com\mycompany\sd\socket\server\project\EventsListener.class
+com\mycompany\sd\socket\server\project\ConnectionsThread.class
+com\mycompany\sd\socket\server\project\ClientConnectedEvent.class
+com\mycompany\sd\socket\server\project\SocketClient.class
+com\mycompany\sd\socket\server\project\TCPSocketServer.class
+com\mycompany\sd\socket\server\project\MessageReceivedEvent.class
 com\mycompany\sd\socket\server\project\SocketServerForm.class
+com\mycompany\sd\socket\server\project\ClientDisconnectedEvent.class
+com\mycompany\sd\socket\server\project\serverEventsListener.class
+com\mycompany\sd\socket\server\project\MessageReceivedListener.class
+com\mycompany\sd\socket\server\project\Packet.class
 com\mycompany\sd\socket\server\project\SocketServerForm$1.class
