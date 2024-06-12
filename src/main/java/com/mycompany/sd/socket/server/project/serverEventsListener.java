@@ -18,12 +18,12 @@ import com.mycompany.paquete.*;
  * @author Hp
  */
 public class serverEventsListener implements EventsListener{
-    private ConcurrentHashMap<String, SocketClient> clients;
+    private ConcurrentHashMap<Integer, SocketClient> clients;
     private SocketServerForm serverForm;
     private DatabaseManager databaseManager;
     private GameServer gameServer;
 
-    public serverEventsListener(ConcurrentHashMap<String, SocketClient> clients, SocketServerForm serverForm) {
+    public serverEventsListener(ConcurrentHashMap<Integer, SocketClient> clients, SocketServerForm serverForm) {
         this.clients = clients;
         this.serverForm = serverForm;
         this.databaseManager = new DatabaseManager();
@@ -33,21 +33,21 @@ public class serverEventsListener implements EventsListener{
     @Override
     public void handleClientConnected(ClientConnectedEvent event) {
         SocketClient socketClient = new SocketClient(event.getClientSocket(), this);
-        String sessionID = event.getClientSocket().getInetAddress().getHostAddress();
+        Integer sessionID = event.getClientSocket().hashCode();
         socketClient.cambiarToken(sessionID);
         clients.put(sessionID, socketClient);
         startClient(sessionID);
         serverForm.addMessage("Cliente conectado: " + sessionID);
     }
     
-    private void startClient(String key) {
+    private void startClient(Integer key) {
         SocketClient socketClient = this.clients.get(key);
         socketClient.startClient();
     }
 
     @Override
     public void handleClientDisconnected(ClientDisconnectedEvent event) {
-        String clientToken = event.getClientToken();
+        Integer clientToken = event.getClientToken();
         clients.remove(clientToken);
         serverForm.addMessage("Cliente desconectado: " + clientToken);
     }
@@ -55,7 +55,7 @@ public class serverEventsListener implements EventsListener{
     @Override
     public void handleMessageReceived(MessageReceivedEvent event) {
         String message = event.getMessage();
-        String token = event.getToken();
+        Integer token = event.getToken();
         if (message.startsWith("PING hacia el servidor...")){
             System.out.println("PING del cliente");
             return;
@@ -89,14 +89,24 @@ public class serverEventsListener implements EventsListener{
                         output.println("REGISTER_FAILURE");
                     }       break;
                     }
-                case "create sala":
-                    gameServer.handleCreateSala(paquete);    
-                        output.println("SALA_CREATED");
+                case "create sala":{
+                    String salaDatos = gameServer.handleCreateSala(paquete);    
+                    output.println("SALA_CREATED " + salaDatos);
                     break;
-                case "join sala":
-                    gameServer.handleCreateSala(paquete);    
-                        output.println("SALA_CREATED");
+                }
+                case "join sala":{
+                    String salaDatos = gameServer.handleJoinSala(token, paquete);   
+                    if(!"JOIN_FAILURE".equals(salaDatos))
+                        output.println("SALA_JOINED "+ salaDatos);
+                    else
+                        output.println(salaDatos);
                     break;
+                }
+                case "send message sala":{
+                    gameServer.handleMessageSala(paquete);    
+                    output.println("");
+                    break;
+                }
                 default:
                     break;
             }

@@ -25,7 +25,7 @@ public class SocketServerForm extends javax.swing.JFrame {
     }
     
     public void mostrarTokenSalas(String message){
-        jTextArea2.append(message + "\n");
+        jTextArea2.setText(message + "\n");
     }
     
     /**

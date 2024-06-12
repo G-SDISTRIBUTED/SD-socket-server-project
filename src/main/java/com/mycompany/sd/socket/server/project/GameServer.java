@@ -4,10 +4,7 @@
  */
 package com.mycompany.sd.socket.server.project;
 
-import com.mycompany.paquete.Paquete;
-import com.mycompany.paquete.Usuario;
-import com.mycompany.paquete.Sala;
-import java.time.LocalDateTime;
+import com.mycompany.paquete.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -33,25 +30,29 @@ public class GameServer {
         listUsuarios.add(usuario);
     }
     
-    public boolean handleLogin(String token, Paquete paquete){
+    public boolean handleLogin(Integer token, Paquete paquete){
         Usuario usuario = paquete.getUsuario();
         String username = usuario.getUsername();
         String password = usuario.getPassword();
         boolean success = databaseManager.loginUser(username, password);
         
         if(success){
-            for (Usuario user : listUsuarios) {
-                if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
-                    user.addSocketToken(token);
-                    return true;
-                }
-            }
+            //MODIFICAR ESTA PARTE
+            usuario.addSocketToken(token);
+            addUsuario(usuario);
+            mostrarTokenSalas();
+//            for (Usuario user : listUsuarios) {
+//                if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+//                    user.addSocketToken(token);
+//                    return true;
+//                }
+//            }
             mostrarTokenSalas();
         }
         return success;
     }
     
-    public boolean handleRegister(String token, Paquete paquete){
+    public boolean handleRegister(Integer token, Paquete paquete){
         Usuario usuario = paquete.getUsuario();
         String username = usuario.getUsername();
         String password = usuario.getPassword();
@@ -73,10 +74,37 @@ public class GameServer {
         serverForm.mostrarTokenSalas(message);
     }
     
-    public void handleCreateSala(Paquete paquete){
+    public String handleCreateSala(Paquete paquete){
         Sala sala = paquete.getSala();
-        sala.setToken(Objects.hash(sala));
+        Usuario creador = sala.getCreador();
+        Integer token = Objects.hash(sala);
+        sala.setToken(token);
+        for (Usuario user : listUsuarios) {
+            if (user.getUsername().equals(creador.getUsername()) && user.getPassword().equals(creador.getPassword())) {
+                sala.setCreador(user);
+                break;
+            }
+        }        
         addSala(sala);
         mostrarTokenSalas();
+        return token+" "+sala.getName();
+    }
+    
+    public String handleJoinSala(Integer token, Paquete paquete){
+        Integer tokenSala =  paquete.getSala().getToken();
+        Usuario usuario = paquete.getUsuario();
+        usuario.addSocketToken(token);
+        for (Sala sala : listSalas) {
+            if (sala.getToken().equals(tokenSala)) {
+                sala.addJugador(usuario);
+                mostrarTokenSalas();
+                return tokenSala+" "+sala.getName();
+            }
+        }
+        return "JOIN_FAILURE";
+    }
+    
+    public void handleMessageSala(Paquete paquete) {
+        
     }
 }

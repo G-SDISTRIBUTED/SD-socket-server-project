@@ -9,9 +9,9 @@ import java.util.EventObject;
 
 public class ClientDisconnectedEvent extends EventObject {
     private Socket clientSocket;
-    private String clientToken;
+    private Integer clientToken;
 
-    public ClientDisconnectedEvent(Object source, Socket clientSocket, String clientToken) {
+    public ClientDisconnectedEvent(Object source, Socket clientSocket, Integer clientToken) {
         super(source);
         this.clientSocket = clientSocket;
         this.clientToken = clientToken;
@@ -21,7 +21,7 @@ public class ClientDisconnectedEvent extends EventObject {
         return clientSocket;
     }
 
-    public String getClientToken() {
+    public Integer getClientToken() {
         return clientToken;
     }
 }

@@ -12,9 +12,9 @@ import java.util.EventObject;
  */
 public class MessageReceivedEvent extends EventObject {
     private String message;
-    private String token;
+    private Integer token;
 
-    public MessageReceivedEvent(Object source, String message, String token) {
+    public MessageReceivedEvent(Object source, String message, Integer token) {
         super(source);
         this.message = message;
         this.token = token;
@@ -24,7 +24,7 @@ public class MessageReceivedEvent extends EventObject {
         return message;
     }
 
-    public String getToken() {
+    public Integer getToken() {
         return token;
     }
 }
