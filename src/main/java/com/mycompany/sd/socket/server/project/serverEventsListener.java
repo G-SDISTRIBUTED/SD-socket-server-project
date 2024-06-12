@@ -4,11 +4,14 @@
  */
 package com.mycompany.sd.socket.server.project;
 
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import com.mycompany.paquete.Paquete;
+import com.mycompany.paquete.*;
 
 /**
  *
@@ -18,11 +21,13 @@ public class serverEventsListener implements EventsListener{
     private ConcurrentHashMap<String, SocketClient> clients;
     private SocketServerForm serverForm;
     private DatabaseManager databaseManager;
+    private GameServer gameServer;
 
     public serverEventsListener(ConcurrentHashMap<String, SocketClient> clients, SocketServerForm serverForm) {
         this.clients = clients;
         this.serverForm = serverForm;
         this.databaseManager = new DatabaseManager();
+        this.gameServer = new GameServer(this.serverForm);
     }
     
     @Override
@@ -51,34 +56,52 @@ public class serverEventsListener implements EventsListener{
     public void handleMessageReceived(MessageReceivedEvent event) {
         String message = event.getMessage();
         String token = event.getToken();
-
+        if (message.startsWith("PING hacia el servidor...")){
+            System.out.println("PING del cliente");
+            return;
+        }
         try {
+            
             PrintWriter output = new PrintWriter(clients.get(token).getSocket().getOutputStream(), true);
             
-            if (message.startsWith("LOGIN:")) {
-                String[] parts = message.split(":");
-                String username = parts[1];
-                String password = parts[2];
-                boolean success = databaseManager.loginUser(username, password);
-
-                if (success) {
-                    output.println("LOGIN_SUCCESS");
-                } else {
-                    output.println("LOGIN_FAILURE");
-                }
-            } else if (message.startsWith("REGISTER:")) {
-                String[] parts = message.split(":");
-                String username = parts[1];
-                String password = parts[2];
-                boolean success = databaseManager.registerUser(username, password);
-                if (success) {
-                    output.println("REGISTER_SUCCESS");
-                } else {
-                    output.println("REGISTER_FAILURE");
-                }
+            Gson gson = new Gson();
+            StringBuilder jsonString = new StringBuilder();
+            jsonString.append(message);
+            System.out.println("json: "+jsonString.toString());
+            System.out.println("message: "+ message);
+            Paquete paquete = gson.fromJson(message, Paquete.class);
+            String comando = paquete.getComando();
+        
+            if (null != comando) switch (comando) {
+                case "login":{
+                    boolean success = gameServer.handleLogin(token, paquete);
+                    if (success) {
+                        output.println("LOGIN_SUCCESS");
+                    } else {
+                        output.println("LOGIN_FAILURE");
+                    }       break;
+                    }
+                case "register":{
+                    boolean success = gameServer.handleRegister(token, paquete);
+                    if (success) {
+                        output.println("REGISTER_SUCCESS");
+                    } else {
+                        output.println("REGISTER_FAILURE");
+                    }       break;
+                    }
+                case "create sala":
+                    gameServer.handleCreateSala(paquete);    
+                        output.println("SALA_CREATED");
+                    break;
+                case "join sala":
+                    gameServer.handleCreateSala(paquete);    
+                        output.println("SALA_CREATED");
+                    break;
+                default:
+                    break;
             }
         } catch (IOException ex) {
-                Logger.getLogger(serverEventsListener.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            Logger.getLogger(serverEventsListener.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

@@ -19,7 +19,7 @@ import java.sql.SQLException;
 public class DatabaseManager {
     private static final String DB_URL = "jdbc:postgresql://localhost:5432/socket_database";
     private static final String USER = "postgres";
-    private static final String PASS = "123";
+    private static final String PASS = "password";
     
     static {
         try {
