@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.mycompany.paquete.Paquete;
 import com.mycompany.paquete.*;
+import java.util.List;
 
 /**
  *
@@ -65,45 +66,67 @@ public class serverEventsListener implements EventsListener{
             PrintWriter output = new PrintWriter(clients.get(token).getSocket().getOutputStream(), true);
             
             Gson gson = new Gson();
-            StringBuilder jsonString = new StringBuilder();
-            jsonString.append(message);
-            System.out.println("json: "+jsonString.toString());
-            System.out.println("message: "+ message);
             Paquete paquete = gson.fromJson(message, Paquete.class);
             String comando = paquete.getComando();
         
+            Paquete paqueteResponse = new Paquete();
+            
             if (null != comando) switch (comando) {
                 case "login":{
                     boolean success = gameServer.handleLogin(token, paquete);
                     if (success) {
-                        output.println("LOGIN_SUCCESS");
+                        paqueteResponse.setComando("LOGIN_SUCCESS");
                     } else {
-                        output.println("LOGIN_FAILURE");
-                    }       break;
+                        paqueteResponse.setComando("LOGIN_FAILURE");
+                    }
+                    String response = gson.toJson(paqueteResponse);
+                    output.println(response);
+                    break;
                     }
                 case "register":{
                     boolean success = gameServer.handleRegister(token, paquete);
                     if (success) {
-                        output.println("REGISTER_SUCCESS");
+                        paqueteResponse.setComando("REGISTER_SUCCESS");
                     } else {
-                        output.println("REGISTER_FAILURE");
-                    }       break;
+                        paqueteResponse.setComando("REGISTER_FAILURE");
                     }
-                case "create sala":{
-                    String salaDatos = gameServer.handleCreateSala(paquete);    
-                    output.println("SALA_CREATED " + salaDatos);
+                    String response = gson.toJson(paqueteResponse);
+                    output.println(response);
+                    break;
+                    }
+                case "create room":{
+                    paqueteResponse.setComando("ROOM_CREATED");
+                    paqueteResponse.setSala(gameServer.handleCreateRoom(paquete));
+                    String response = gson.toJson(paqueteResponse);
+                    output.println(response);
                     break;
                 }
-                case "join sala":{
-                    String salaDatos = gameServer.handleJoinSala(token, paquete);   
-                    if(!"JOIN_FAILURE".equals(salaDatos))
-                        output.println("SALA_JOINED "+ salaDatos);
-                    else
-                        output.println(salaDatos);
+                case "request to join room":{
+                    boolean success = gameServer.handleRequestJoinRoom(token, paquete);   
+                    if(success){
+                        paqueteResponse.setComando("REQUEST SENT");
+                    }else
+                        paqueteResponse.setComando("REQUEST FAILED");
+                    
+                    String response = gson.toJson(paqueteResponse);
+                    output.println(response);
                     break;
                 }
-                case "send message sala":{
-                    gameServer.handleMessageSala(paquete);    
+                case "join request accepted":{
+                    
+                    break;
+                }
+                case "get rooms":{
+                    paqueteResponse.setComando("SENDING ROOMS");
+                    String rooms = gson.toJson(gameServer.getListRooms());
+                    paqueteResponse.addParam(rooms);
+                    
+                    String response = gson.toJson(paqueteResponse);
+                    output.println(response);
+                    break;
+                }
+                case "send message room":{
+                    gameServer.handleMessageRoom(paquete);    
                     output.println("");
                     break;
                 }

@@ -18,6 +18,7 @@ public class SocketServerForm extends javax.swing.JFrame {
         initComponents();
         tcpSocketServer = new TCPSocketServer(12345, this);
         tcpSocketServer.startConnectionListener();
+        
     }
 
     public void addMessage(String message) {
@@ -44,6 +45,7 @@ public class SocketServerForm extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Server");
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
