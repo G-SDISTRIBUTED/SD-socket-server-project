@@ -113,7 +113,7 @@ public class serverEventsListener implements EventsListener{
                     break;
                 }
                 case "join request accepted":{
-                    
+                    gameServer.handleJoinRequestAccepted(paquete);
                     break;
                 }
                 case "get rooms":{
