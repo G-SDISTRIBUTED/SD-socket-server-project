@@ -116,6 +116,10 @@ public class serverEventsListener implements EventsListener{
                     gameServer.handleJoinRequestAccepted(paquete);
                     break;
                 }
+                case "join request rejected": {
+                    gameServer.handleJoinRequestRejected(paquete);
+                    break;
+                }
                 case "get rooms":{
                     paqueteResponse.setComando("SENDING ROOMS");
                     String rooms = gson.toJson(gameServer.getListRooms());

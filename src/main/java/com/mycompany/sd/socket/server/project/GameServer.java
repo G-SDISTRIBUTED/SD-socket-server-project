@@ -155,6 +155,24 @@ public class GameServer {
         }
     }
     
+    public void handleJoinRequestRejected(Paquete paquete){
+        Integer tokenRoom =  Integer.valueOf((String)paquete.getParams().getFirst());
+        Usuario jugador = (Usuario) paquete.getUsuario();
+        try {
+            Integer jugadorIdSocket = jugador.getSocketTokens().getLast();
+            Socket jugadorSocket = TCPSocketServer.getClient(jugadorIdSocket).getSocket();
+            PrintWriter out = new PrintWriter(jugadorSocket.getOutputStream(), true);
+            Paquete paqueteRequest = new Paquete();
+            paqueteRequest.setComando("JOIN ROOM REJECTED");
+            paqueteRequest.addParam(tokenRoom);
+            Gson gson = new Gson();
+            String response = gson.toJson(paqueteRequest);
+            out.println(response);
+        } catch (IOException ex) {
+            Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     public void handleJoinRoom(Paquete paquete){
         List<Object> params = paquete.getParams();
         Integer tokenRoom = (Integer) params.getFirst();
