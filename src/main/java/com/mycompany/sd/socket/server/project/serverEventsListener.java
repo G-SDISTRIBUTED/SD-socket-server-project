@@ -73,9 +73,10 @@ public class serverEventsListener implements EventsListener{
             
             if (null != comando) switch (comando) {
                 case "login":{
-                    boolean success = gameServer.handleLogin(token, paquete);
-                    if (success) {
+                    Usuario user = gameServer.handleLogin(token, paquete);
+                    if (user != null) {
                         paqueteResponse.setComando("LOGIN_SUCCESS");
+                        paqueteResponse.setUsuario(user);
                     } else {
                         paqueteResponse.setComando("LOGIN_FAILURE");
                     }
@@ -84,9 +85,10 @@ public class serverEventsListener implements EventsListener{
                     break;
                     }
                 case "register":{
-                    boolean success = gameServer.handleRegister(token, paquete);
-                    if (success) {
+                    Usuario user = gameServer.handleRegister(token, paquete);
+                    if (user != null) {
                         paqueteResponse.setComando("REGISTER_SUCCESS");
+                        paqueteResponse.setUsuario(user);
                     } else {
                         paqueteResponse.setComando("REGISTER_FAILURE");
                     }
@@ -102,7 +104,7 @@ public class serverEventsListener implements EventsListener{
                     break;
                 }
                 case "request to join room":{
-                    boolean success = gameServer.handleRequestJoinRoom(token, paquete);   
+                    boolean success = gameServer.handleRequestJoinRoom(paquete);   
                     if(success){
                         paqueteResponse.setComando("REQUEST SENT");
                     }else
@@ -129,9 +131,15 @@ public class serverEventsListener implements EventsListener{
                     output.println(response);
                     break;
                 }
-                case "send message room":{
-                    gameServer.handleMessageRoom(paquete);    
-                    output.println("");
+                case "exit room":{
+                    gameServer.handleExitRoom(paquete);   
+                    paqueteResponse.setComando("LEFT THE ROOM");
+                    String response = gson.toJson(paqueteResponse);
+                    output.println(response);
+                    break;
+                }
+                case "delete room":{
+                    gameServer.handleDeleteRoom(paquete);
                     break;
                 }
                 default:

@@ -36,12 +36,12 @@ public class GameServer {
         listUsuarios.add(usuario);
     }
     
-    public boolean handleLogin(Integer token, Paquete paquete){
+    public Usuario handleLogin(Integer token, Paquete paquete){
         Usuario usuario = paquete.getUsuario();
         String username = usuario.getUsername();
         String password = usuario.getPassword();
         boolean success = databaseManager.loginUser(username, password);
-        
+        //System.out.println("ID: "+ databaseManager.getId(username, password));
         if(success){
             //MODIFICAR ESTA PARTE
             usuario.addSocketToken(token);
@@ -54,11 +54,12 @@ public class GameServer {
 //                }
 //            }
             mostrarTokenSalas();
+            return usuario;
         }
-        return success;
+        return null;
     }
     
-    public boolean handleRegister(Integer token, Paquete paquete){
+    public Usuario handleRegister(Integer token, Paquete paquete){
         Usuario usuario = paquete.getUsuario();
         String username = usuario.getUsername();
         String password = usuario.getPassword();
@@ -67,8 +68,9 @@ public class GameServer {
             usuario.addSocketToken(token);
             addUsuario(usuario);
             mostrarTokenSalas();
+            return usuario;
         }
-        return success;
+        return null;
     }
     
     public List<Sala> getListRooms(){
@@ -92,6 +94,7 @@ public class GameServer {
         for (Usuario user : listUsuarios) {
             if (user.getUsername().equals(creador.getUsername()) && user.getPassword().equals(creador.getPassword())) {
                 sala.setCreador(user);
+                sala.addJugador(user);
                 break;
             }
         }        
@@ -100,10 +103,9 @@ public class GameServer {
         return sala;
     }
     
-    public boolean handleRequestJoinRoom(Integer token, Paquete paquete){
+    public boolean handleRequestJoinRoom(Paquete paquete){
         Integer tokenSala =  Integer.valueOf((String)paquete.getParams().getFirst());
         Usuario usuario = (Usuario) paquete.getUsuario();
-        usuario.addSocketToken(token);
         for (Sala sala : listRooms) {
             if (sala.getToken().equals(tokenSala)) {
                 PrintWriter out = null;
@@ -133,27 +135,47 @@ public class GameServer {
         for (Sala sala : listRooms) {
             if (sala.getToken().equals(tokenRoom)) {
                 sala.addJugador(jugador);
-                
-                PrintWriter out = null;
+                System.out.println("Jugador entrando: "+jugador);
                 try {
                     Integer jugadorIdSocket = jugador.getSocketTokens().getLast();
                     Socket jugadorSocket = TCPSocketServer.getClient(jugadorIdSocket).getSocket();
-                    out = new PrintWriter(jugadorSocket.getOutputStream(), true);
+                    PrintWriter out = new PrintWriter(jugadorSocket.getOutputStream(), true);
                     Paquete paqueteRequest = new Paquete();
                     paqueteRequest.setComando("JOIN ROOM ACCEPTED");
                     paqueteRequest.setSala(sala);
                     Gson gson = new Gson();
                     String response = gson.toJson(paqueteRequest);
                     out.println(response);
+                    
+                    avisarCambioEnJugadores(sala);
+                
                     return;
                 } catch (IOException ex) {
                     Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
-                } finally {
-                    out.close();
                 }
             }
         }
     }
+    
+    public void avisarCambioEnJugadores(Sala sala){
+        List<Usuario> listaJugadores = sala.getJugadores();
+        for(Usuario jugador: listaJugadores){
+            try {
+                Integer jugadorIdSocket = jugador.getSocketTokens().getLast();
+                Socket jugadorSocket = TCPSocketServer.getClient(jugadorIdSocket).getSocket();
+                PrintWriter out = new PrintWriter(jugadorSocket.getOutputStream(), true);
+                Paquete paqueteRequest = new Paquete();
+                paqueteRequest.setComando("CHANGE PLAYERS LIST");
+                paqueteRequest.setSala(sala);
+                Gson gson = new Gson();
+                String response = gson.toJson(paqueteRequest);
+                out.println(response);
+            } catch (IOException ex) {
+                Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
     
     public void handleJoinRequestRejected(Paquete paquete){
         Integer tokenRoom =  Integer.valueOf((String)paquete.getParams().getFirst());
@@ -172,20 +194,41 @@ public class GameServer {
             Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public void handleJoinRoom(Paquete paquete){
-        List<Object> params = paquete.getParams();
-        Integer tokenRoom = (Integer) params.getFirst();
-        Usuario jugador = (Usuario) params.getLast();
+ 
+    void handleExitRoom(Paquete paquete) {
+        Integer tokenRoom = Integer.valueOf((String)paquete.getParams().get(0));
+        Usuario jugador = paquete.getUsuario();
         for (Sala sala : listRooms) {
             if (sala.getToken().equals(tokenRoom)) {
-                sala.addJugador(jugador);
-                //Enviarle un mensaje al jugador de exito para que entre a la sala
+                sala.deleteJugador(jugador);
+                avisarCambioEnJugadores(sala);
+                return;
             }
         }
     }
-    
-    public void handleMessageRoom(Paquete paquete) {
-        
+
+    void handleDeleteRoom(Paquete paquete) {
+        Integer tokenRoom = Integer.valueOf((String)paquete.getParams().get(0));
+        for (Sala sala : listRooms) {
+            if (sala.getToken().equals(tokenRoom)) {
+                listRooms.remove(sala);
+                List<Usuario> listaJugadores = sala.getJugadores();
+                for(Usuario jugador: listaJugadores){
+                    try {
+                        Integer jugadorIdSocket = jugador.getSocketTokens().getLast();
+                        Socket jugadorSocket = TCPSocketServer.getClient(jugadorIdSocket).getSocket();
+                        PrintWriter out = new PrintWriter(jugadorSocket.getOutputStream(), true);
+                        Paquete paqueteRequest = new Paquete();
+                        paqueteRequest.setComando("ROOM DELETED");
+                        Gson gson = new Gson();
+                        String response = gson.toJson(paqueteRequest);
+                        out.println(response);
+                    } catch (IOException ex) {
+                        Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                return;
+            }
+        }
     }
 }
