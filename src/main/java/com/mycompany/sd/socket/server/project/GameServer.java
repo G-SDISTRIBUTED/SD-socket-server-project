@@ -104,14 +104,14 @@ public class GameServer {
     }
     
     public boolean handleRequestJoinRoom(Paquete paquete){
-        Integer tokenSala =  Integer.valueOf((String)paquete.getParams().getFirst());
+        Integer tokenSala =  Integer.valueOf((String)paquete.getParams().get(0));
         Usuario usuario = (Usuario) paquete.getUsuario();
         for (Sala sala : listRooms) {
             if (sala.getToken().equals(tokenSala)) {
                 PrintWriter out = null;
                 try {
                     Usuario creador = sala.getCreador();
-                    Integer creadorIdSocket = creador.getSocketTokens().getLast();
+                    Integer creadorIdSocket = creador.getSocketTokens().get(creador.getSocketTokens().size()-1);
                     Socket creadorSocket = TCPSocketServer.getClient(creadorIdSocket).getSocket();
                     out = new PrintWriter(creadorSocket.getOutputStream(), true);
                     Paquete paqueteRequest = new Paquete();
@@ -130,14 +130,14 @@ public class GameServer {
     }
     
     public void handleJoinRequestAccepted(Paquete paquete){
-        Integer tokenRoom =  Integer.valueOf((String)paquete.getParams().getFirst());
+        Integer tokenRoom =  Integer.valueOf((String)paquete.getParams().get(0));
         Usuario jugador = (Usuario) paquete.getUsuario();
         for (Sala sala : listRooms) {
             if (sala.getToken().equals(tokenRoom)) {
                 sala.addJugador(jugador);
                 System.out.println("Jugador entrando: "+jugador);
                 try {
-                    Integer jugadorIdSocket = jugador.getSocketTokens().getLast();
+                    Integer jugadorIdSocket = jugador.getSocketTokens().get(jugador.getSocketTokens().size()-1);
                     Socket jugadorSocket = TCPSocketServer.getClient(jugadorIdSocket).getSocket();
                     PrintWriter out = new PrintWriter(jugadorSocket.getOutputStream(), true);
                     Paquete paqueteRequest = new Paquete();
@@ -161,7 +161,7 @@ public class GameServer {
         List<Usuario> listaJugadores = sala.getJugadores();
         for(Usuario jugador: listaJugadores){
             try {
-                Integer jugadorIdSocket = jugador.getSocketTokens().getLast();
+                Integer jugadorIdSocket = jugador.getSocketTokens().get(jugador.getSocketTokens().size()-1);
                 Socket jugadorSocket = TCPSocketServer.getClient(jugadorIdSocket).getSocket();
                 PrintWriter out = new PrintWriter(jugadorSocket.getOutputStream(), true);
                 Paquete paqueteRequest = new Paquete();
@@ -178,10 +178,10 @@ public class GameServer {
     
     
     public void handleJoinRequestRejected(Paquete paquete){
-        Integer tokenRoom =  Integer.valueOf((String)paquete.getParams().getFirst());
+        Integer tokenRoom =  Integer.valueOf((String)paquete.getParams().get(0));
         Usuario jugador = (Usuario) paquete.getUsuario();
         try {
-            Integer jugadorIdSocket = jugador.getSocketTokens().getLast();
+            Integer jugadorIdSocket = jugador.getSocketTokens().get(jugador.getSocketTokens().size()-1);
             Socket jugadorSocket = TCPSocketServer.getClient(jugadorIdSocket).getSocket();
             PrintWriter out = new PrintWriter(jugadorSocket.getOutputStream(), true);
             Paquete paqueteRequest = new Paquete();
@@ -215,7 +215,7 @@ public class GameServer {
                 List<Usuario> listaJugadores = sala.getJugadores();
                 for(Usuario jugador: listaJugadores){
                     try {
-                        Integer jugadorIdSocket = jugador.getSocketTokens().getLast();
+                        Integer jugadorIdSocket = jugador.getSocketTokens().get(jugador.getSocketTokens().size()-1);
                         Socket jugadorSocket = TCPSocketServer.getClient(jugadorIdSocket).getSocket();
                         PrintWriter out = new PrintWriter(jugadorSocket.getOutputStream(), true);
                         Paquete paqueteRequest = new Paquete();
