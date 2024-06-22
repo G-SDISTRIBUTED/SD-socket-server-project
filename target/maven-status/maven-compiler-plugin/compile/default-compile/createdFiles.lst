@@ -9,6 +9,7 @@ com\mycompany\sd\socket\server\project\MessageReceivedEvent.class
 com\mycompany\sd\socket\server\project\SocketServerForm.class
 com\mycompany\sd\socket\server\project\ClientDisconnectedEvent.class
 com\mycompany\sd\socket\server\project\serverEventsListener.class
+com\mycompany\sd\socket\server\project\GameServer.class
 com\mycompany\sd\socket\server\project\MessageReceivedListener.class
 com\mycompany\sd\socket\server\project\Packet.class
 com\mycompany\sd\socket\server\project\SocketServerForm$1.class

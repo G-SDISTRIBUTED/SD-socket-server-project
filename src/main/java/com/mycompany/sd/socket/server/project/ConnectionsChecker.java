@@ -12,6 +12,7 @@ package com.mycompany.sd.socket.server.project;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.util.Map;
 
 public class ConnectionsChecker extends Thread {
@@ -34,12 +35,11 @@ public class ConnectionsChecker extends Thread {
     }
     
     private void checkClientsConnectivity() {
-        Map<String, SocketClient> clients = tcpSocketServer.getClients();
+        Map<Integer, SocketClient> clients = tcpSocketServer.getClients();
         clients.entrySet().removeIf(entry -> {
-            String clientAddress = entry.getKey().replace("/", "");
-            SocketClient client = entry.getValue();
+            SocketClient client = entry.getValue();        
             try {
-                InetAddress inetAddress = InetAddress.getByName(clientAddress);
+                InetAddress inetAddress = client.getSocket().getInetAddress();
                 if (!inetAddress.isReachable(3000)) {
                     client.close();
                     return true;

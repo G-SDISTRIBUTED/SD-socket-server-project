@@ -1,3 +1,19 @@
+<<<<<<< HEAD
+D:\Proyectos\Java\SD-socket-server-project\src\main\java\com\mycompany\sd\socket\server\project\ClientConnectedEvent.java
+D:\Proyectos\Java\SD-socket-server-project\src\main\java\com\mycompany\sd\socket\server\project\ConnectionsThread.java
+D:\Proyectos\Java\SD-socket-server-project\src\main\java\com\mycompany\sd\socket\server\project\MessageReceivedEvent.java
+D:\Proyectos\Java\SD-socket-server-project\src\main\java\com\mycompany\sd\socket\server\project\DatabaseManager.java
+D:\Proyectos\Java\SD-socket-server-project\src\main\java\com\mycompany\sd\socket\server\project\ConnectionsChecker.java
+D:\Proyectos\Java\SD-socket-server-project\src\main\java\com\mycompany\sd\socket\server\project\ClientDisconnectedEvent.java
+D:\Proyectos\Java\SD-socket-server-project\src\main\java\com\mycompany\sd\socket\server\project\SocketClient.java
+D:\Proyectos\Java\SD-socket-server-project\src\main\java\com\mycompany\sd\socket\server\project\EventsListener.java
+D:\Proyectos\Java\SD-socket-server-project\src\main\java\com\mycompany\sd\socket\server\project\GameServer.java
+D:\Proyectos\Java\SD-socket-server-project\src\main\java\com\mycompany\sd\socket\server\project\MessageReceivedListener.java
+D:\Proyectos\Java\SD-socket-server-project\src\main\java\com\mycompany\sd\socket\server\project\TCPSocketServer.java
+D:\Proyectos\Java\SD-socket-server-project\src\main\java\com\mycompany\sd\socket\server\project\Packet.java
+D:\Proyectos\Java\SD-socket-server-project\src\main\java\com\mycompany\sd\socket\server\project\SocketServerForm.java
+D:\Proyectos\Java\SD-socket-server-project\src\main\java\com\mycompany\sd\socket\server\project\serverEventsListener.java
+=======
 C:\Users\Pc\Documents\NetBeansProjects\SD-socket-server-project\src\main\java\com\mycompany\sd\socket\server\project\DatabaseManager.java
 C:\Users\Pc\Documents\NetBeansProjects\SD-socket-server-project\src\main\java\com\mycompany\sd\socket\server\project\MessageReceivedListener.java
 C:\Users\Pc\Documents\NetBeansProjects\SD-socket-server-project\src\main\java\com\mycompany\sd\socket\server\project\ConnectionsChecker.java
@@ -11,3 +27,4 @@ C:\Users\Pc\Documents\NetBeansProjects\SD-socket-server-project\src\main\java\co
 C:\Users\Pc\Documents\NetBeansProjects\SD-socket-server-project\src\main\java\com\mycompany\sd\socket\server\project\EventsListener.java
 C:\Users\Pc\Documents\NetBeansProjects\SD-socket-server-project\src\main\java\com\mycompany\sd\socket\server\project\Packet.java
 C:\Users\Pc\Documents\NetBeansProjects\SD-socket-server-project\src\main\java\com\mycompany\sd\socket\server\project\TCPSocketServer.java
+>>>>>>> develop

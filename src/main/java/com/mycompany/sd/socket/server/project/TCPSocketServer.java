@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class TCPSocketServer {
     private ServerSocket serverSocket;
-    private ConcurrentHashMap<String, SocketClient> clients;
+    private static ConcurrentHashMap<Integer, SocketClient> clients;
     private ConnectionsThread connectionsThread;
     private SocketServerForm serverForm;
     private ConnectionsChecker connectionsChecker;
@@ -49,10 +49,14 @@ public class TCPSocketServer {
         this.connectionsThread.start();
     }
 
-    public ConcurrentHashMap<String, SocketClient> getClients() {
+    public ConcurrentHashMap<Integer, SocketClient> getClients() {
         return clients;
     }
 
+    public static SocketClient getClient(Integer token){
+        return clients.get(token);
+    }
+    
     public SocketServerForm getServerForm() {
         return serverForm;
     }

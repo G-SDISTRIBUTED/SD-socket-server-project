@@ -8,13 +8,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
 
 public class SocketClient {
     private Socket socket;
     private Thread messagesThread;
     private EventsListener eventsListener;
-    private String token = "";
+    private Integer token = 0;
 
     public SocketClient(Socket socket, EventsListener eventsListener) {
         this.socket = socket;
@@ -26,7 +27,7 @@ public class SocketClient {
         return socket;
     }
     
-    public void cambiarToken(String token) {
+    public void cambiarToken(Integer token) {
         this.token = token;
     }
 
@@ -77,5 +78,9 @@ public class SocketClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    InetAddress getInetAddress() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
